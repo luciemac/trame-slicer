@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 
+from trame.decorators import trigger
 from trame.widgets import client
 from trame_server.utils.typed_state import TypedState
 from trame_vuetify.widgets.vuetify3 import VFileInput, VProgressCircular, VTooltip
@@ -53,6 +54,9 @@ class LoadVolumeButton(FlexContainer):
     def __init__(self, name: str, load_directory: bool, icon: str, typed_state: TypedState[LoadVolumeItemsState]):
         super().__init__(justify="center", row=True, style="width: 50px; height: 50px;")
 
+        self._files = []
+        self._typed_state = typed_state
+
         with self:
             VTooltip(
                 v_model=(typed_state.name.button_tooltip,),
@@ -63,16 +67,26 @@ class LoadVolumeButton(FlexContainer):
             )
             VFileInput(
                 v_if=(f"!{typed_state.name.loading_busy}",),
-                change=(
-                    f"{typed_state.name.loading_busy} = true; {typed_state.name.button_tooltip} = false;"
-                    "trigger('"
-                    f"{self.server.controller.trigger_name(self.on_load_volume.async_emit)}"
-                    f"', [$event.target.files, '{typed_state.name.loading_busy}']"
-                    ")"
-                ),
+                change=f"""
+                    utils.file_loading.actions.send_chunk(
+                        $event.target.files,
+                        '{self.server.trigger_name(self.upload_chunk)}'
+                    )
+                """,
                 prepend_icon=icon,
                 multiple=not load_directory,
                 hide_input=True,
                 raw_attrs=["webkitdirectory"] if load_directory else [],
             )
             VProgressCircular(v_else=True, indeterminate=True, size=24)
+
+    async def upload_chunk(self, files_list: list[dict]) -> None:
+        self._typed_state.data.loading_busy = True
+        self._typed_state.data.button_tooltip = False
+
+        if not files_list:
+            await self.on_load_volume.async_emit(self._files, self._typed_state.name.loading_busy)
+            self._files = []
+
+        else:
+            self._files.extend(files_list)
