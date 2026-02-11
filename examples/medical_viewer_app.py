@@ -25,19 +25,9 @@ class MedicalViewerApp:
         return self._server
 
 
-def load_js_module(server: Server) -> None:
-    js_file = Path(__file__).parent / "js/utils.js"
-    server.enable_module(
-        dict(
-            serve={"file_loading": str(js_file.parent)},
-            scripts=[f"file_loading/{js_file.name}"],
-        )
-    )
-
 def main(server=None, **kwargs):
     app = MedicalViewerApp(server)
     enable_testing(app.server)
-    load_js_module(app.server)
     app.server.start(**kwargs)
 
 

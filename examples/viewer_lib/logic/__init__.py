@@ -13,6 +13,7 @@ from .segmentation import (
 )
 from .segmentation_app_logic import SegmentationAppLogic
 from .slab_logic import SlabLogic
+from .viewer_logic import ViewerLogic
 from .volume_property_logic import VolumePropertyLogic
 
 __all__ = [
@@ -29,5 +30,6 @@ __all__ = [
     "SegmentationAppLogic",
     "SlabLogic",
     "ThresholdEffectLogic",
+    "ViewerLogic",
     "VolumePropertyLogic",
 ]

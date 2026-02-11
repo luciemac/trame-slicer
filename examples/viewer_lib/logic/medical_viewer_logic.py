@@ -4,7 +4,7 @@ from trame_slicer.core import LayoutManager, SlicerApp
 from trame_slicer.rca_view import register_rca_factories
 
 from ..ui import MedicalViewerUI, SegmentEditorUI, ViewerLayoutState, VolumePropertyUI
-from .base_logic import BaseLogic
+from .viewer_logic import ViewerLogic
 from .layout_button_logic import LayoutButtonLogic
 from .load_volume_logic import LoadVolumeLogic
 from .markups_button_logic import MarkupsButtonLogic
@@ -14,7 +14,7 @@ from .slab_logic import SlabLogic
 from .volume_property_logic import VolumePropertyLogic
 
 
-class MedicalViewerLogic(BaseLogic[ViewerLayoutState]):
+class MedicalViewerLogic(ViewerLogic[ViewerLayoutState]):
     def __init__(self, server: Server, slicer_app: SlicerApp):
         super().__init__(server, slicer_app, ViewerLayoutState)
 
